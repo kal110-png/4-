@@ -1,0 +1,1082 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>로컬 공부 플래너</title>
+  <style>
+    :root {
+      --bg: #f6f8fc;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --line: #e5e7eb;
+      --primary: #4f46e5;
+      --primary-soft: #eef2ff;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --success: #10b981;
+      --dark: #111827;
+      --shadow: 0 10px 30px rgba(17, 24, 39, 0.08);
+      --radius: 18px;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+      background: linear-gradient(180deg, #eef2ff 0%, var(--bg) 35%);
+      color: var(--text);
+    }
+
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, #4f46e5, #7c3aed);
+      color: white;
+      border-radius: 28px;
+      padding: 28px;
+      box-shadow: var(--shadow);
+      margin-bottom: 24px;
+    }
+
+    .hero h1 {
+      margin: 0 0 10px;
+      font-size: 32px;
+    }
+
+    .hero p {
+      margin: 0;
+      opacity: 0.92;
+      line-height: 1.6;
+    }
+
+    .summary-grid,
+    .grid-2,
+    .grid-3,
+    .grid-4 {
+      display: grid;
+      gap: 16px;
+    }
+
+    .summary-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); margin-bottom: 20px; }
+    .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .grid-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 18px;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(229, 231, 235, 0.85);
+    }
+
+    .card h2, .card h3 {
+      margin-top: 0;
+      margin-bottom: 12px;
+    }
+
+    .muted { color: var(--muted); }
+
+    .stat-number {
+      font-size: 28px;
+      font-weight: 800;
+      margin-top: 6px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      background: var(--primary-soft);
+      color: var(--primary);
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      display: inline-block;
+      flex-shrink: 0;
+    }
+
+    .dot.red { background: var(--danger); }
+    .dot.yellow { background: var(--warning); }
+    .dot.green { background: var(--success); }
+    .dot.blue { background: #3b82f6; }
+    .dot.gray { background: #9ca3af; }
+
+    form {
+      display: grid;
+      gap: 10px;
+    }
+
+    .form-row {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .form-row-3 {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .form-row-4 {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    label {
+      font-size: 13px;
+      font-weight: 700;
+      color: #374151;
+      margin-bottom: 4px;
+      display: block;
+    }
+
+    input, select, textarea, button {
+      font: inherit;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 12px 14px;
+      background: #fff;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    button {
+      border: none;
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-light {
+      background: #f3f4f6;
+      color: var(--dark);
+    }
+
+    .btn-danger {
+      background: #fee2e2;
+      color: #b91c1c;
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .item {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 14px;
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      align-items: flex-start;
+      background: #fff;
+    }
+
+    .item-main {
+      min-width: 0;
+    }
+
+    .item-title {
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 6px;
+    }
+
+    .meta {
+      font-size: 13px;
+      color: var(--muted);
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .pill {
+      padding: 5px 9px;
+      border-radius: 999px;
+      background: #f3f4f6;
+      font-size: 12px;
+      font-weight: 700;
+      color: #374151;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .timetable-day {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 14px;
+      background: white;
+    }
+
+    .timer-box {
+      text-align: center;
+      padding: 12px;
+      border: 1px dashed #c7d2fe;
+      border-radius: 18px;
+      background: #fafaff;
+    }
+
+    .timer-time {
+      font-size: 42px;
+      font-weight: 900;
+      letter-spacing: 2px;
+      margin: 14px 0;
+    }
+
+    .highlight-danger {
+      border-color: #fecaca;
+      background: #fff7f7;
+    }
+
+    .highlight-warning {
+      border-color: #fde68a;
+      background: #fffbeb;
+    }
+
+    .empty {
+      padding: 18px;
+      border-radius: 14px;
+      border: 1px dashed var(--line);
+      color: var(--muted);
+      text-align: center;
+      background: #fcfcfd;
+    }
+
+    .small {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    a.file-link {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 700;
+    }
+
+    @media (max-width: 1024px) {
+      .summary-grid, .grid-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .grid-3 { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 720px) {
+      .summary-grid, .grid-2, .grid-4, .form-row, .form-row-3, .form-row-4 { grid-template-columns: 1fr; }
+      .container { padding: 14px; }
+      .hero { padding: 20px; }
+      .timer-time { font-size: 34px; }
+      .item { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <section class="hero">
+      <h1>로컬 공부 플래너</h1>
+      <p>
+        서버 없이 브라우저에서 바로 사용하는 공부 관리 웹앱입니다. 시간표 등록, 열품타 스타일 타이머, 과목 중요도 기반 공부 시간 추천,
+        과제·시험 D-day 관리, 주차별 필기와 파일 등록까지 한 번에 처리합니다.
+      </p>
+    </section>
+
+    <section class="summary-grid" id="summaryGrid"></section>
+
+    <section class="grid-2">
+      <div class="card">
+        <div class="section-title">
+          <h2>1) 과목 등록 + 중요도</h2>
+          <span class="badge">중요도 비율 자동 반영</span>
+        </div>
+        <form id="subjectForm">
+          <div class="form-row">
+            <div>
+              <label for="subjectName">과목명</label>
+              <input id="subjectName" required placeholder="예: 자료구조" />
+            </div>
+            <div>
+              <label for="subjectImportance">중요도 (1~5)</label>
+              <select id="subjectImportance">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3" selected>3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div>
+              <label for="subjectColor">과목 색상</label>
+              <input id="subjectColor" type="color" value="#4f46e5" />
+            </div>
+            <div>
+              <label for="dailyTarget">하루 총 공부 목표 (분)</label>
+              <input id="dailyTarget" type="number" min="10" value="180" />
+            </div>
+          </div>
+          <button class="btn-primary" type="submit">과목 저장</button>
+        </form>
+        <div style="height:12px"></div>
+        <div id="subjectList" class="list"></div>
+      </div>
+
+      <div class="card">
+        <div class="section-title">
+          <h2>2) 열품타 스타일 타이머</h2>
+          <span class="badge">공부 시간 자동 기록</span>
+        </div>
+        <div class="timer-box">
+          <label for="timerSubject">공부 과목</label>
+          <select id="timerSubject"></select>
+          <div class="timer-time" id="timerDisplay">00:00:00</div>
+          <div class="btn-row" style="justify-content:center;">
+            <button class="btn-primary" id="startTimerBtn" type="button">시작</button>
+            <button class="btn-light" id="pauseTimerBtn" type="button">일시정지</button>
+            <button class="btn-danger" id="stopTimerBtn" type="button">종료 후 저장</button>
+          </div>
+          <p class="small">종료 후 저장을 누르면 오늘의 과목별 공부 시간에 반영됩니다.</p>
+        </div>
+        <div style="height:16px"></div>
+        <h3>오늘 공부 시간 추천</h3>
+        <div id="recommendationList" class="list"></div>
+      </div>
+    </section>
+
+    <div style="height:16px"></div>
+
+    <section class="grid-2">
+      <div class="card">
+        <div class="section-title">
+          <h2>3) 시간표 등록</h2>
+          <span class="badge">요일별 수업 관리</span>
+        </div>
+        <form id="scheduleForm">
+          <div class="form-row-4">
+            <div>
+              <label for="scheduleDay">요일</label>
+              <select id="scheduleDay">
+                <option>월</option><option>화</option><option>수</option><option>목</option><option>금</option><option>토</option><option>일</option>
+              </select>
+            </div>
+            <div>
+              <label for="scheduleStart">시작</label>
+              <input id="scheduleStart" type="time" required />
+            </div>
+            <div>
+              <label for="scheduleEnd">종료</label>
+              <input id="scheduleEnd" type="time" required />
+            </div>
+            <div>
+              <label for="scheduleSubject">과목</label>
+              <select id="scheduleSubject"></select>
+            </div>
+          </div>
+          <button class="btn-primary" type="submit">시간표 추가</button>
+        </form>
+        <div style="height:12px"></div>
+        <div class="grid-4" id="timetableGrid"></div>
+      </div>
+
+      <div class="card">
+        <div class="section-title">
+          <h2>4) 과제·시험 마감일</h2>
+          <span class="badge">7일 이내 자동 강조</span>
+        </div>
+        <form id="deadlineForm">
+          <div class="form-row-4">
+            <div>
+              <label for="deadlineType">유형</label>
+              <select id="deadlineType">
+                <option value="assignment">과제</option>
+                <option value="exam">시험</option>
+              </select>
+            </div>
+            <div>
+              <label for="deadlineTitle">제목</label>
+              <input id="deadlineTitle" required placeholder="예: 중간고사" />
+            </div>
+            <div>
+              <label for="deadlineSubject">과목</label>
+              <select id="deadlineSubject"></select>
+            </div>
+            <div>
+              <label for="deadlineDate">마감일</label>
+              <input id="deadlineDate" type="date" required />
+            </div>
+          </div>
+          <div class="form-row">
+            <div>
+              <label for="deadlinePoints">포인트</label>
+              <input id="deadlinePoints" type="number" min="0" value="10" />
+            </div>
+            <div>
+              <label for="deadlineMemo">메모</label>
+              <input id="deadlineMemo" placeholder="예: 5장까지 시험" />
+            </div>
+          </div>
+          <button class="btn-primary" type="submit">마감 일정 저장</button>
+        </form>
+        <div style="height:12px"></div>
+        <div id="deadlineAlertList" class="list"></div>
+      </div>
+    </section>
+
+    <div style="height:16px"></div>
+
+    <section class="grid-2">
+      <div class="card">
+        <div class="section-title">
+          <h2>5) 주차별 필기 + 파일 등록</h2>
+          <span class="badge">브라우저 로컬 저장</span>
+        </div>
+        <form id="noteForm">
+          <div class="form-row-3">
+            <div>
+              <label for="noteSubject">과목</label>
+              <select id="noteSubject"></select>
+            </div>
+            <div>
+              <label for="noteWeek">주차</label>
+              <input id="noteWeek" required placeholder="예: 5주차" />
+            </div>
+            <div>
+              <label for="noteFile">파일 첨부</label>
+              <input id="noteFile" type="file" />
+            </div>
+          </div>
+          <div>
+            <label for="noteText">필기 내용</label>
+            <textarea id="noteText" required placeholder="수업 내용을 적어주세요."></textarea>
+          </div>
+          <button class="btn-primary" type="submit">필기 저장</button>
+        </form>
+        <p class="small">파일은 브라우저 내부 DB(IndexedDB)에 저장되므로 같은 브라우저에서 다시 열면 유지됩니다.</p>
+      </div>
+
+      <div class="card">
+        <div class="section-title">
+          <h2>필기 목록</h2>
+          <span class="badge">주차별 정리</span>
+        </div>
+        <div id="noteList" class="list"></div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const STORAGE_KEY = 'studyPlannerLocal_v1';
+    const DB_NAME = 'studyPlannerFilesDB';
+    const DB_STORE = 'files';
+    let fileDB = null;
+
+    const state = loadState();
+    let timer = {
+      running: false,
+      startAt: null,
+      elapsedMs: 0,
+      intervalId: null,
+    };
+
+    const els = {
+      summaryGrid: document.getElementById('summaryGrid'),
+      subjectForm: document.getElementById('subjectForm'),
+      subjectList: document.getElementById('subjectList'),
+      subjectName: document.getElementById('subjectName'),
+      subjectImportance: document.getElementById('subjectImportance'),
+      subjectColor: document.getElementById('subjectColor'),
+      dailyTarget: document.getElementById('dailyTarget'),
+      timerSubject: document.getElementById('timerSubject'),
+      timerDisplay: document.getElementById('timerDisplay'),
+      startTimerBtn: document.getElementById('startTimerBtn'),
+      pauseTimerBtn: document.getElementById('pauseTimerBtn'),
+      stopTimerBtn: document.getElementById('stopTimerBtn'),
+      recommendationList: document.getElementById('recommendationList'),
+      scheduleForm: document.getElementById('scheduleForm'),
+      scheduleDay: document.getElementById('scheduleDay'),
+      scheduleStart: document.getElementById('scheduleStart'),
+      scheduleEnd: document.getElementById('scheduleEnd'),
+      scheduleSubject: document.getElementById('scheduleSubject'),
+      timetableGrid: document.getElementById('timetableGrid'),
+      deadlineForm: document.getElementById('deadlineForm'),
+      deadlineType: document.getElementById('deadlineType'),
+      deadlineTitle: document.getElementById('deadlineTitle'),
+      deadlineSubject: document.getElementById('deadlineSubject'),
+      deadlineDate: document.getElementById('deadlineDate'),
+      deadlinePoints: document.getElementById('deadlinePoints'),
+      deadlineMemo: document.getElementById('deadlineMemo'),
+      deadlineAlertList: document.getElementById('deadlineAlertList'),
+      noteForm: document.getElementById('noteForm'),
+      noteSubject: document.getElementById('noteSubject'),
+      noteWeek: document.getElementById('noteWeek'),
+      noteFile: document.getElementById('noteFile'),
+      noteText: document.getElementById('noteText'),
+      noteList: document.getElementById('noteList'),
+    };
+
+    init();
+
+    async function init() {
+      await openDB();
+      bindEvents();
+      renderAll();
+    }
+
+    function loadState() {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) return JSON.parse(raw);
+      return {
+        dailyTargetMinutes: 180,
+        subjects: [],
+        timetable: [],
+        deadlines: [],
+        notes: [],
+        studyLogs: []
+      };
+    }
+
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    function bindEvents() {
+      els.subjectForm.addEventListener('submit', onAddSubject);
+      els.scheduleForm.addEventListener('submit', onAddSchedule);
+      els.deadlineForm.addEventListener('submit', onAddDeadline);
+      els.noteForm.addEventListener('submit', onAddNote);
+      els.startTimerBtn.addEventListener('click', startTimer);
+      els.pauseTimerBtn.addEventListener('click', pauseTimer);
+      els.stopTimerBtn.addEventListener('click', stopTimerAndSave);
+      els.dailyTarget.addEventListener('change', () => {
+        state.dailyTargetMinutes = Number(els.dailyTarget.value || 180);
+        saveState();
+        renderSummary();
+        renderRecommendations();
+      });
+    }
+
+    function uid() {
+      return `${Date.now()}_${Math.random().toString(16).slice(2, 8)}`;
+    }
+
+    function onAddSubject(e) {
+      e.preventDefault();
+      const subject = {
+        id: uid(),
+        name: els.subjectName.value.trim(),
+        importance: Number(els.subjectImportance.value),
+        color: els.subjectColor.value,
+      };
+      state.dailyTargetMinutes = Number(els.dailyTarget.value || 180);
+      state.subjects.push(subject);
+      saveState();
+      els.subjectForm.reset();
+      els.subjectColor.value = '#4f46e5';
+      els.subjectImportance.value = '3';
+      els.dailyTarget.value = state.dailyTargetMinutes;
+      renderAll();
+    }
+
+    function onAddSchedule(e) {
+      e.preventDefault();
+      if (!els.scheduleSubject.value) return alert('먼저 과목을 등록해주세요.');
+      state.timetable.push({
+        id: uid(),
+        day: els.scheduleDay.value,
+        start: els.scheduleStart.value,
+        end: els.scheduleEnd.value,
+        subjectId: els.scheduleSubject.value,
+      });
+      saveState();
+      els.scheduleForm.reset();
+      renderTimetable();
+      renderSummary();
+    }
+
+    function onAddDeadline(e) {
+      e.preventDefault();
+      if (!els.deadlineSubject.value) return alert('먼저 과목을 등록해주세요.');
+      state.deadlines.push({
+        id: uid(),
+        type: els.deadlineType.value,
+        title: els.deadlineTitle.value.trim(),
+        subjectId: els.deadlineSubject.value,
+        dueDate: els.deadlineDate.value,
+        points: Number(els.deadlinePoints.value || 0),
+        memo: els.deadlineMemo.value.trim(),
+      });
+      saveState();
+      els.deadlineForm.reset();
+      els.deadlinePoints.value = '10';
+      renderDeadlines();
+      renderSummary();
+    }
+
+    async function onAddNote(e) {
+      e.preventDefault();
+      if (!els.noteSubject.value) return alert('먼저 과목을 등록해주세요.');
+
+      let fileMeta = null;
+      const file = els.noteFile.files[0];
+      if (file) {
+        const fileId = uid();
+        await saveFileToDB({ id: fileId, file });
+        fileMeta = { id: fileId, name: file.name, type: file.type };
+      }
+
+      state.notes.unshift({
+        id: uid(),
+        subjectId: els.noteSubject.value,
+        week: els.noteWeek.value.trim(),
+        text: els.noteText.value.trim(),
+        fileMeta,
+        createdAt: new Date().toISOString(),
+      });
+      saveState();
+      els.noteForm.reset();
+      renderNotes();
+      renderSummary();
+    }
+
+    function startTimer() {
+      if (!els.timerSubject.value) return alert('과목을 먼저 등록하고 선택해주세요.');
+      if (timer.running) return;
+      timer.running = true;
+      timer.startAt = Date.now() - timer.elapsedMs;
+      timer.intervalId = setInterval(() => {
+        timer.elapsedMs = Date.now() - timer.startAt;
+        updateTimerDisplay();
+      }, 1000);
+    }
+
+    function pauseTimer() {
+      if (!timer.running) return;
+      timer.running = false;
+      clearInterval(timer.intervalId);
+      timer.intervalId = null;
+      timer.elapsedMs = Date.now() - timer.startAt;
+      updateTimerDisplay();
+    }
+
+    function stopTimerAndSave() {
+      if (!els.timerSubject.value) return alert('과목을 선택해주세요.');
+      if (timer.running) {
+        timer.elapsedMs = Date.now() - timer.startAt;
+      }
+      clearInterval(timer.intervalId);
+      timer.intervalId = null;
+      if (timer.elapsedMs < 1000) {
+        timer.running = false;
+        timer.elapsedMs = 0;
+        updateTimerDisplay();
+        return alert('1초 이상 공부했을 때 저장됩니다.');
+      }
+
+      state.studyLogs.push({
+        id: uid(),
+        subjectId: els.timerSubject.value,
+        seconds: Math.floor(timer.elapsedMs / 1000),
+        createdAt: new Date().toISOString(),
+      });
+      saveState();
+      timer.running = false;
+      timer.startAt = null;
+      timer.elapsedMs = 0;
+      updateTimerDisplay();
+      renderSummary();
+      renderRecommendations();
+      alert('공부 시간이 저장되었습니다.');
+    }
+
+    function updateTimerDisplay() {
+      const totalSec = Math.floor(timer.elapsedMs / 1000);
+      const h = String(Math.floor(totalSec / 3600)).padStart(2, '0');
+      const m = String(Math.floor((totalSec % 3600) / 60)).padStart(2, '0');
+      const s = String(totalSec % 60).padStart(2, '0');
+      els.timerDisplay.textContent = `${h}:${m}:${s}`;
+    }
+
+    function renderAll() {
+      els.dailyTarget.value = state.dailyTargetMinutes || 180;
+      renderSummary();
+      renderSubjects();
+      fillSubjectSelects();
+      renderTimetable();
+      renderDeadlines();
+      renderRecommendations();
+      renderNotes();
+      updateTimerDisplay();
+    }
+
+    function renderSummary() {
+      const todayStudySec = getTodayStudyLogs().reduce((sum, log) => sum + log.seconds, 0);
+      const urgentCount = getSortedDeadlines().filter(item => getDDay(item.dueDate) <= 7 && getDDay(item.dueDate) >= 0).length;
+      const noteCount = state.notes.length;
+      const subjectCount = state.subjects.length;
+
+      els.summaryGrid.innerHTML = `
+        <div class="card">
+          <div class="muted">등록 과목 수</div>
+          <div class="stat-number">${subjectCount}</div>
+        </div>
+        <div class="card">
+          <div class="muted">오늘 공부 시간</div>
+          <div class="stat-number">${formatMinutes(todayStudySec / 60)}</div>
+        </div>
+        <div class="card">
+          <div class="muted">7일 이내 일정</div>
+          <div class="stat-number">${urgentCount}</div>
+        </div>
+        <div class="card">
+          <div class="muted">저장된 필기 수</div>
+          <div class="stat-number">${noteCount}</div>
+        </div>
+      `;
+    }
+
+    function renderSubjects() {
+      if (!state.subjects.length) {
+        els.subjectList.innerHTML = '<div class="empty">아직 등록된 과목이 없습니다.</div>';
+        return;
+      }
+      els.subjectList.innerHTML = state.subjects.map(subject => `
+        <div class="item">
+          <div class="item-main">
+            <div class="item-title">
+              <span class="dot" style="background:${subject.color}"></span>
+              ${escapeHtml(subject.name)}
+            </div>
+            <div class="meta">
+              <span class="pill">중요도 ${subject.importance}</span>
+              <span class="pill">추천 비율 ${getSubjectRatio(subject)}%</span>
+              <span class="pill">오늘 ${formatMinutes(getTodayStudySecondsBySubject(subject.id) / 60)}</span>
+            </div>
+          </div>
+          <div class="btn-row">
+            <button class="btn-danger" type="button" onclick="removeSubject('${subject.id}')">삭제</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function fillSubjectSelects() {
+      const options = state.subjects.map(s => `<option value="${s.id}">${escapeHtml(s.name)}</option>`).join('');
+      const empty = '<option value="">과목 선택</option>';
+      [els.timerSubject, els.scheduleSubject, els.deadlineSubject, els.noteSubject].forEach(select => {
+        const current = select.value;
+        select.innerHTML = empty + options;
+        if (state.subjects.some(s => s.id === current)) select.value = current;
+      });
+    }
+
+    function renderTimetable() {
+      const days = ['월', '화', '수', '목', '금', '토', '일'];
+      els.timetableGrid.innerHTML = days.map(day => {
+        const items = state.timetable
+          .filter(row => row.day === day)
+          .sort((a, b) => a.start.localeCompare(b.start));
+
+        return `
+          <div class="timetable-day">
+            <h3>${day}</h3>
+            ${items.length ? items.map(row => {
+              const subject = getSubject(row.subjectId);
+              return `
+                <div class="item" style="padding:10px; margin-bottom:8px;">
+                  <div class="item-main">
+                    <div class="item-title">
+                      <span class="dot" style="background:${subject?.color || '#9ca3af'}"></span>
+                      ${escapeHtml(subject?.name || '알 수 없음')}
+                    </div>
+                    <div class="meta">${row.start} ~ ${row.end}</div>
+                  </div>
+                  <button class="btn-danger" type="button" onclick="removeSchedule('${row.id}')">삭제</button>
+                </div>
+              `;
+            }).join('') : '<div class="empty">수업 없음</div>'}
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderDeadlines() {
+      const items = getSortedDeadlines();
+      if (!items.length) {
+        els.deadlineAlertList.innerHTML = '<div class="empty">등록된 과제/시험이 없습니다.</div>';
+        return;
+      }
+      els.deadlineAlertList.innerHTML = items.map(item => {
+        const subject = getSubject(item.subjectId);
+        const dday = getDDay(item.dueDate);
+        const urgentClass = dday <= 3 && dday >= 0 ? 'highlight-danger' : dday <= 7 && dday >= 0 ? 'highlight-warning' : '';
+        const dotClass = dday < 0 ? 'gray' : dday <= 3 ? 'red' : dday <= 7 ? 'yellow' : 'green';
+        const typeLabel = item.type === 'assignment' ? '과제' : '시험';
+        return `
+          <div class="item ${urgentClass}">
+            <div class="item-main">
+              <div class="item-title">
+                <span class="dot ${dotClass}"></span>
+                ${escapeHtml(item.title)}
+                <span class="pill">${typeLabel}</span>
+                <span class="pill">포인트 ${item.points}</span>
+              </div>
+              <div class="meta">
+                <span>${escapeHtml(subject?.name || '미지정')}</span>
+                <span>${item.dueDate}</span>
+                <span>${formatDDay(dday)}</span>
+              </div>
+              ${item.memo ? `<div class="small" style="margin-top:8px;">메모: ${escapeHtml(item.memo)}</div>` : ''}
+            </div>
+            <button class="btn-danger" type="button" onclick="removeDeadline('${item.id}')">삭제</button>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderRecommendations() {
+      if (!state.subjects.length) {
+        els.recommendationList.innerHTML = '<div class="empty">과목을 등록하면 중요도 기반 추천이 나옵니다.</div>';
+        return;
+      }
+      const totalImportance = state.subjects.reduce((sum, s) => sum + s.importance, 0) || 1;
+      els.recommendationList.innerHTML = state.subjects
+        .slice()
+        .sort((a, b) => b.importance - a.importance)
+        .map(subject => {
+          const recommendedMinutes = Math.round((state.dailyTargetMinutes * subject.importance) / totalImportance);
+          const studiedMinutes = Math.floor(getTodayStudySecondsBySubject(subject.id) / 60);
+          const remain = Math.max(recommendedMinutes - studiedMinutes, 0);
+          return `
+            <div class="item">
+              <div class="item-main">
+                <div class="item-title">
+                  <span class="dot" style="background:${subject.color}"></span>
+                  ${escapeHtml(subject.name)}
+                </div>
+                <div class="meta">
+                  <span>추천 ${recommendedMinutes}분</span>
+                  <span>오늘 공부 ${studiedMinutes}분</span>
+                  <span>남은 권장 ${remain}분</span>
+                </div>
+              </div>
+              <span class="pill">중요도 ${subject.importance}</span>
+            </div>
+          `;
+        }).join('');
+    }
+
+    function renderNotes() {
+      if (!state.notes.length) {
+        els.noteList.innerHTML = '<div class="empty">아직 저장된 필기가 없습니다.</div>';
+        return;
+      }
+      els.noteList.innerHTML = state.notes.map(note => {
+        const subject = getSubject(note.subjectId);
+        return `
+          <div class="item">
+            <div class="item-main">
+              <div class="item-title">
+                <span class="dot" style="background:${subject?.color || '#9ca3af'}"></span>
+                ${escapeHtml(subject?.name || '알 수 없음')} · ${escapeHtml(note.week)}
+              </div>
+              <div class="small">${new Date(note.createdAt).toLocaleString('ko-KR')}</div>
+              <div style="margin-top:8px; line-height:1.65; white-space:pre-wrap;">${escapeHtml(note.text)}</div>
+              ${note.fileMeta ? `<div style="margin-top:10px;"><a class="file-link" href="#" onclick="downloadNoteFile('${note.fileMeta.id}'); return false;">첨부파일 열기: ${escapeHtml(note.fileMeta.name)}</a></div>` : ''}
+            </div>
+            <button class="btn-danger" type="button" onclick="removeNote('${note.id}')">삭제</button>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function getTodayStudyLogs() {
+      const today = new Date().toISOString().slice(0, 10);
+      return state.studyLogs.filter(log => log.createdAt.slice(0, 10) === today);
+    }
+
+    function getTodayStudySecondsBySubject(subjectId) {
+      return getTodayStudyLogs()
+        .filter(log => log.subjectId === subjectId)
+        .reduce((sum, log) => sum + log.seconds, 0);
+    }
+
+    function getSubject(subjectId) {
+      return state.subjects.find(s => s.id === subjectId);
+    }
+
+    function getSortedDeadlines() {
+      return state.deadlines.slice().sort((a, b) => a.dueDate.localeCompare(b.dueDate));
+    }
+
+    function getDDay(dateString) {
+      const today = new Date();
+      const start = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+      const due = new Date(dateString + 'T00:00:00');
+      return Math.ceil((due - start) / (1000 * 60 * 60 * 24));
+    }
+
+    function formatDDay(dday) {
+      if (dday > 0) return `D-${dday}`;
+      if (dday === 0) return 'D-Day';
+      return `마감 지남 ${Math.abs(dday)}일`;
+    }
+
+    function formatMinutes(minutes) {
+      const total = Math.floor(minutes);
+      const h = Math.floor(total / 60);
+      const m = total % 60;
+      if (h > 0) return `${h}시간 ${m}분`;
+      return `${m}분`;
+    }
+
+    function getSubjectRatio(subject) {
+      const total = state.subjects.reduce((sum, s) => sum + s.importance, 0) || 1;
+      return Math.round((subject.importance / total) * 100);
+    }
+
+    function escapeHtml(text = '') {
+      return text
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+    }
+
+    async function openDB() {
+      if (!('indexedDB' in window)) return;
+      return new Promise((resolve, reject) => {
+        const request = indexedDB.open(DB_NAME, 1);
+        request.onupgradeneeded = event => {
+          const db = event.target.result;
+          if (!db.objectStoreNames.contains(DB_STORE)) {
+            db.createObjectStore(DB_STORE, { keyPath: 'id' });
+          }
+        };
+        request.onsuccess = () => {
+          fileDB = request.result;
+          resolve();
+        };
+        request.onerror = () => reject(request.error);
+      });
+    }
+
+    async function saveFileToDB(record) {
+      if (!fileDB) return;
+      return new Promise((resolve, reject) => {
+        const tx = fileDB.transaction(DB_STORE, 'readwrite');
+        tx.objectStore(DB_STORE).put(record);
+        tx.oncomplete = () => resolve();
+        tx.onerror = () => reject(tx.error);
+      });
+    }
+
+    async function getFileFromDB(id) {
+      if (!fileDB) return null;
+      return new Promise((resolve, reject) => {
+        const tx = fileDB.transaction(DB_STORE, 'readonly');
+        const req = tx.objectStore(DB_STORE).get(id);
+        req.onsuccess = () => resolve(req.result);
+        req.onerror = () => reject(req.error);
+      });
+    }
+
+    async function deleteFileFromDB(id) {
+      if (!fileDB) return;
+      return new Promise((resolve, reject) => {
+        const tx = fileDB.transaction(DB_STORE, 'readwrite');
+        tx.objectStore(DB_STORE).delete(id);
+        tx.oncomplete = () => resolve();
+        tx.onerror = () => reject(tx.error);
+      });
+    }
+
+    window.downloadNoteFile = async function(id) {
+      const record = await getFileFromDB(id);
+      if (!record?.file) return alert('파일을 찾을 수 없습니다.');
+      const url = URL.createObjectURL(record.file);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = record.file.name || 'download';
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+
+    window.removeSubject = function(id) {
+      if (!confirm('과목을 삭제하면 관련 시간표와 추천에도 영향이 있습니다. 삭제할까요?')) return;
+      state.subjects = state.subjects.filter(s => s.id !== id);
+      state.timetable = state.timetable.filter(t => t.subjectId !== id);
+      saveState();
+      renderAll();
+    }
+
+    window.removeSchedule = function(id) {
+      state.timetable = state.timetable.filter(t => t.id !== id);
+      saveState();
+      renderTimetable();
+      renderSummary();
+    }
+
+    window.removeDeadline = function(id) {
+      state.deadlines = state.deadlines.filter(d => d.id !== id);
+      saveState();
+      renderDeadlines();
+      renderSummary();
+    }
+
+    window.removeNote = async function(id) {
+      const note = state.notes.find(n => n.id === id);
+      if (note?.fileMeta?.id) await deleteFileFromDB(note.fileMeta.id);
+      state.notes = state.notes.filter(n => n.id !== id);
+      saveState();
+      renderNotes();
+      renderSummary();
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,120 @@
+     1	<!DOCTYPE html>
+     2	<html lang="ko">
+     3	<head>
+     4	  <meta charset="UTF-8" />
+     5	  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+     6	  <title>로컬 공부 플래너</title>
+     7	  <style>
+     8	    :root {
+     9	      --bg: #f6f8fc;
+    10	      --card: #ffffff;
+    11	      --text: #1f2937;
+    12	      --muted: #6b7280;
+    13	      --line: #e5e7eb;
+    14	      --primary: #4f46e5;
+    15	      --primary-soft: #eef2ff;
+    16	      --danger: #ef4444;
+    17	      --warning: #f59e0b;
+    18	      --success: #10b981;
+    19	      --dark: #111827;
+    20	      --shadow: 0 10px 30px rgba(17, 24, 39, 0.08);
+    21	      --radius: 18px;
+    22	    }
+    23	
+    24	    * { box-sizing: border-box; }
+    25	    body {
+    26	      margin: 0;
+    27	      font-family: "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+    28	      background: linear-gradient(180deg, #eef2ff 0%, var(--bg) 35%);
+    29	      color: var(--text);
+    30	    }
+    31	
+    32	    .container {
+    33	      max-width: 1280px;
+    34	      margin: 0 auto;
+    35	      padding: 24px;
+    36	    }
+    37	
+    38	    .hero {
+    39	      background: linear-gradient(135deg, #4f46e5, #7c3aed);
+    40	      color: white;
+    41	      border-radius: 28px;
+    42	      padding: 28px;
+    43	      box-shadow: var(--shadow);
+    44	      margin-bottom: 24px;
+    45	    }
+    46	
+    47	    .hero h1 {
+    48	      margin: 0 0 10px;
+    49	      font-size: 32px;
+    50	    }
+    51	
+    52	    .hero p {
+    53	      margin: 0;
+    54	      opacity: 0.92;
+    55	      line-height: 1.6;
+    56	    }
+    57	
+    58	    .summary-grid,
+    59	    .grid-2,
+    60	    .grid-3,
+    61	    .grid-4 {
+    62	      display: grid;
+    63	      gap: 16px;
+    64	    }
+    65	
+    66	    .summary-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); margin-bottom: 20px; }
+    67	    .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    68	    .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    69	    .grid-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    70	
+    71	    .card {
+    72	      background: var(--card);
+    73	      border-radius: var(--radius);
+    74	      padding: 18px;
+    75	      box-shadow: var(--shadow);
+    76	      border: 1px solid rgba(229, 231, 235, 0.85);
+    77	    }
+    78	
+    79	    .card h2, .card h3 {
+    80	      margin-top: 0;
+    81	      margin-bottom: 12px;
+    82	    }
+    83	
+    84	    .muted { color: var(--muted); }
+    85	
+    86	    .stat-number {
+    87	      font-size: 28px;
+    88	      font-weight: 800;
+    89	      margin-top: 6px;
+    90	    }
+    91	
+    92	    .badge {
+    93	      display: inline-flex;
+    94	      align-items: center;
+    95	      gap: 6px;
+    96	      padding: 6px 10px;
+    97	      border-radius: 999px;
+    98	      font-size: 12px;
+    99	      font-weight: 700;
+   100	      background: var(--primary-soft);
+   101	      color: var(--primary);
+   102	    }
+   103	
+   104	    .dot {
+   105	      width: 10px;
+   106	      height: 10px;
+   107	      border-radius: 50%;
+   108	      display: inline-block;
+   109	      flex-shrink: 0;
+   110	    }
+   111	
+   112	    .dot.red { background: var(--danger); }
+   113	    .dot.yellow { background: var(--warning); }
+   114	    .dot.green { background: var(--success); }
+   115	    .dot.blue { background: #3b82f6; }
+   116	    .dot.gray { background: #9ca3af; }
+   117	
+   118	    form {
+   119	      display: grid;
+   120	      gap: 10px;
